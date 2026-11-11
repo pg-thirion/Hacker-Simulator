@@ -1,0 +1,399 @@
+/* ============================================================
+   HACKER SIMULATOR // NETWORK & INTEL STYLESHEET
+   Topology Canvas, Packet Sniffer, Mission Cards, Arsenal
+   ============================================================ */
+
+.network-body {
+  position: relative;
+  flex: 1;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at center, var(--bg-tertiary) 0%, var(--bg-primary) 100%);
+  overflow: hidden;
+}
+
+#network-canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* Inspector Floating Card */
+.inspector-card {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 250px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-focus);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.7);
+  border-radius: 4px;
+  display: flex;
+  flex-direction: column;
+  z-index: 20;
+  backdrop-filter: blur(4px);
+  animation: fadeIn 0.2s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.inspector-header {
+  background: var(--bg-tertiary);
+  padding: 6px 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 600;
+  font-size: 11px;
+  border-bottom: 1px solid var(--border-color);
+  color: var(--text-accent);
+}
+
+.inspector-content {
+  padding: 10px;
+  font-size: 11px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.inspector-row {
+  display: flex;
+  justify-content: space-between;
+  border-bottom: 1px dashed var(--border-color);
+  padding-bottom: 2px;
+}
+
+.inspector-actions {
+  display: flex;
+  gap: 6px;
+  padding: 8px 10px;
+  background: var(--bg-secondary);
+  border-top: 1px solid var(--border-color);
+}
+
+.btn-quick-act {
+  flex: 1;
+  font-size: 10px;
+  padding: 4px;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+}
+
+.btn-quick-act:hover {
+  background: var(--text-accent);
+  color: var(--bg-primary);
+  font-weight: 600;
+}
+
+/* Bottom Right Split Tabs */
+.tabs-header {
+  padding: 0 4px 0 0;
+  display: flex;
+  align-items: center;
+}
+
+.tabs-list {
+  display: flex;
+  height: 100%;
+}
+
+.tab-btn {
+  background: transparent;
+  border: none;
+  border-right: 1px solid var(--border-color);
+  border-bottom: 2px solid transparent;
+  border-radius: 0;
+  padding: 0 12px;
+  height: 100%;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-dim);
+  cursor: pointer;
+}
+
+.tab-btn:hover {
+  background: var(--bg-primary);
+  color: var(--text-main);
+  box-shadow: none;
+}
+
+.tab-btn.active {
+  background: var(--bg-secondary);
+  color: var(--text-accent);
+  border-bottom: 2px solid var(--text-accent);
+  font-weight: 600;
+}
+
+.traffic-pulse {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 10px;
+  color: var(--text-dim);
+  padding-right: 8px;
+}
+
+.traffic-pulse .dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--text-accent);
+  animation: pulse 1s infinite;
+}
+
+.tab-content-container {
+  flex: 1;
+  overflow-y: auto;
+  position: relative;
+  background: var(--bg-secondary);
+}
+
+.tab-pane {
+  display: none;
+  height: 100%;
+  padding: 10px;
+  flex-direction: column;
+}
+
+.tab-pane.active {
+  display: flex;
+}
+
+/* Packet Sniffer Table */
+.sniffer-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.search-input {
+  flex: 1;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  color: var(--text-main);
+  font-family: inherit;
+  font-size: 11px;
+  padding: 4px 8px;
+  border-radius: 3px;
+  outline: none;
+}
+
+.search-input:focus {
+  border-color: var(--border-focus);
+}
+
+.checkbox-label {
+  font-size: 11px;
+  color: var(--text-dim);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+}
+
+.table-scroll {
+  flex: 1;
+  overflow-y: auto;
+  border: 1px solid var(--border-color);
+  background: var(--bg-primary);
+  border-radius: 3px;
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 11px;
+  text-align: left;
+}
+
+.data-table th {
+  background: var(--bg-tertiary);
+  color: var(--text-dim);
+  font-weight: 600;
+  padding: 6px 8px;
+  position: sticky;
+  top: 0;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.data-table td {
+  padding: 4px 8px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.data-table tr:hover {
+  background: rgba(0, 255, 102, 0.05);
+}
+
+.proto-tcp { color: #7aa2f7; }
+.proto-ssh { color: #bb9af7; font-weight: 600; }
+.proto-http { color: #73daca; }
+.proto-icmp { color: #e0af68; }
+.proto-raw { color: #f7768e; }
+
+/* Missions Tab */
+.mission-card-hero {
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-focus);
+  box-shadow: 0 0 10px rgba(0, 255, 102, 0.15);
+  border-radius: 4px;
+  padding: 12px;
+  margin-bottom: 12px;
+}
+
+.mission-tag {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--text-accent);
+  letter-spacing: 1px;
+}
+
+.mission-title {
+  font-size: 14px;
+  font-weight: 700;
+  margin: 4px 0 6px 0;
+  color: var(--text-main);
+}
+
+.mission-desc {
+  font-size: 11px;
+  color: var(--text-main);
+  margin-bottom: 8px;
+  line-height: 1.4;
+}
+
+.mission-objectives {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 8px 0;
+}
+
+.obj-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+}
+
+.obj-check {
+  color: var(--text-dim);
+}
+
+.obj-check.done {
+  color: var(--text-accent);
+  font-weight: bold;
+}
+
+.mission-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px dashed var(--border-color);
+  font-size: 11px;
+}
+
+.sub-header {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-dim);
+  margin-bottom: 8px;
+}
+
+.contracts-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.contract-item {
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  padding: 8px 10px;
+  border-radius: 3px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.contract-item:hover {
+  border-color: var(--border-focus);
+  background: var(--bg-card);
+}
+
+/* Arsenal Grid */
+.arsenal-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.tool-card {
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  padding: 10px;
+  border-radius: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.tool-card.unlocked {
+  border-color: var(--border-focus);
+}
+
+.tool-name {
+  font-weight: 600;
+  font-size: 12px;
+  color: var(--text-accent);
+}
+
+.tool-desc {
+  font-size: 10px;
+  color: var(--text-dim);
+  flex: 1;
+}
+
+.tool-cost {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-warning);
+}
+
+/* Process Monitor */
+.process-summary {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 10px;
+  background: var(--bg-tertiary);
+  border-radius: 3px;
+  margin-bottom: 8px;
+  font-size: 11px;
+}
+
+.progress-bar-inline {
+  width: 80px;
+  height: 6px;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  border-radius: 2px;
+  overflow: hidden;
+  display: inline-block;
+  vertical-align: middle;
+  margin-right: 6px;
+}
+
+.progress-fill {
+  height: 100%;
+  background: var(--text-accent);
+}

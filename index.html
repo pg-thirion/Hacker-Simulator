@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HACKER SIMULATOR // Terminal & Network Operations</title>
+  <link rel="stylesheet" href="styles/main.css">
+  <link rel="stylesheet" href="styles/terminal.css">
+  <link rel="stylesheet" href="styles/network.css">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%23081008'/><path d='M6 10l6 6-6 6M14 22h10' stroke='%2300ff66' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round' fill='none'/></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+</head>
+<body class="theme-matrix crt-overlay">
+  <!-- Top Navigation & Status Bar -->
+  <header id="top-bar">
+    <div class="brand">
+      <span class="pulse-indicator"></span>
+      <span class="logo-text">HACKER_SIMULATOR <span class="version">v2.4.0-PROD</span></span>
+    </div>
+
+    <div class="status-metrics">
+      <div class="metric">
+        <span class="metric-label">NODE:</span>
+        <span id="current-host-display" class="metric-value">localhost (127.0.0.1)</span>
+      </div>
+      <div class="metric">
+        <span class="metric-label">ACCESS:</span>
+        <span id="privilege-display" class="metric-value badge-root">ROOT</span>
+      </div>
+      <div class="metric">
+        <span class="metric-label">CREDITS:</span>
+        <span id="credits-display" class="metric-value text-accent">0 ₿</span>
+      </div>
+      <div class="metric">
+        <span class="metric-label">TRACE:</span>
+        <div class="trace-bar-container">
+          <div id="trace-bar" class="trace-bar-fill" style="width: 0%"></div>
+        </div>
+        <span id="trace-percent" class="metric-value">0%</span>
+      </div>
+    </div>
+
+    <div class="top-controls">
+      <button id="btn-tutorial-open" class="btn-action" title="Open Hacker Academy Tutorial">🎓 ACADEMY</button>
+      <button id="btn-audio-toggle" class="btn-icon" title="Toggle Audio FX">🔊</button>
+      <button id="btn-ambient-toggle" class="btn-icon" title="Toggle Server Room Ambient Hum">🎧</button>
+      <button id="btn-theme-toggle" class="btn-icon" title="Switch Theme">🎨</button>
+      <button id="btn-crt-toggle" class="btn-icon" title="Toggle CRT Scanlines">📺</button>
+      <button id="btn-save" class="btn-action" title="Save Game">SAVE</button>
+      <button id="btn-export" class="btn-tool" title="Export Savegame as JSON">EXPORT</button>
+      <button id="btn-import" class="btn-tool" title="Import Savegame from JSON">IMPORT</button>
+      <button id="btn-reset" class="btn-danger" title="Wipe & Reset">RESET</button>
+    </div>
+  </header>
+
+  <!-- Main Multi-Panel Workspace -->
+  <main id="workspace">
+    <!-- Left Panel: Interactive Linux Terminal -->
+    <section id="panel-terminal" class="panel active">
+      <div class="panel-header">
+        <div class="panel-title">
+          <span class="tab-badge">TTY1</span>
+          <span id="terminal-tab-title">bash - root@localhost:~</span>
+        </div>
+        <div class="panel-tools">
+          <button id="btn-term-clear" class="btn-tool">CLEAR</button>
+          <button id="btn-term-help" class="btn-tool">MANUAL</button>
+        </div>
+      </div>
+      
+      <div id="terminal-container" class="terminal-body" tabindex="0">
+        <div id="terminal-output"></div>
+        <div class="terminal-input-line">
+          <span id="terminal-prompt" class="prompt">root@localhost:~# </span>
+          <div class="input-wrapper">
+            <input type="text" id="terminal-input" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" autofocus>
+            <span id="custom-cursor" class="cursor"></span>
+          </div>
+        </div>
+        <div id="autocomplete-hints" class="autocomplete-popup hidden"></div>
+      </div>
+    </section>
+
+    <!-- Center/Right Split View -->
+    <div id="right-column">
+      <!-- Top Right: Visual Network Map & Node Inspector -->
+      <section id="panel-network" class="panel">
+        <div class="panel-header">
+          <div class="panel-title">
+            <span class="tab-badge">NET</span>
+            <span>TOPOLOGY GRAPH &amp; SUBNET RECON</span>
+          </div>
+          <div class="panel-tools">
+            <button id="btn-net-recenter" class="btn-tool">RECENTER</button>
+            <button id="btn-net-scan" class="btn-tool">PING SWEEP</button>
+          </div>
+        </div>
+        <div class="network-body">
+          <canvas id="network-canvas"></canvas>
+          <div id="node-inspector" class="inspector-card hidden">
+            <div class="inspector-header">
+              <span id="inspector-name">Host Info</span>
+              <button id="btn-inspector-close" class="btn-close">&times;</button>
+            </div>
+            <div id="inspector-details" class="inspector-content"></div>
+            <div class="inspector-actions">
+              <button id="btn-quick-ssh" class="btn-quick-act">CONNECT SSH</button>
+              <button id="btn-quick-scan" class="btn-quick-act">PORT SCAN</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Bottom Right: Split Tabs (Live Packet Sniffer, Mission Intel, Processes) -->
+      <section id="panel-intel" class="panel">
+        <div class="panel-header tabs-header">
+          <div class="tabs-list">
+            <button class="tab-btn active" data-tab="tab-missions">MISSIONS // INTEL</button>
+            <button class="tab-btn" data-tab="tab-sniffer">PACKET SNIFFER</button>
+            <button class="tab-btn" data-tab="tab-processes">DAEMONS / TASKS</button>
+            <button class="tab-btn" data-tab="tab-tools">ARSENAL</button>
+            <button class="tab-btn" data-tab="tab-rig">CYBER-DECK RIG</button>
+          </div>
+          <div id="traffic-indicator" class="traffic-pulse">
+            <span class="dot"></span> LIVE TRAFFIC
+          </div>
+        </div>
+
+        <div class="tab-content-container">
+          <!-- Missions Tab -->
+          <div id="tab-missions" class="tab-pane active">
+            <div id="mission-active-card" class="mission-card-hero">
+              <!-- Dynamically populated -->
+            </div>
+            <div class="missions-queue">
+              <div class="sub-header">AVAILABLE CONTRACTS &amp; TARGETS</div>
+              <div id="contracts-list" class="contracts-grid"></div>
+            </div>
+          </div>
+
+          <!-- Packet Sniffer Tab -->
+          <div id="tab-sniffer" class="tab-pane">
+            <div class="sniffer-toolbar">
+              <input type="text" id="sniffer-filter" placeholder="Filter by IP, Protocol (TCP, SSH, HTTP)..." class="search-input">
+              <button id="btn-sniffer-clear" class="btn-tool">CLEAR FEED</button>
+              <label class="checkbox-label">
+                <input type="checkbox" id="sniffer-autoscroll" checked> Auto-scroll
+              </label>
+            </div>
+            <div class="table-scroll">
+              <table id="sniffer-table" class="data-table">
+                <thead>
+                  <tr>
+                    <th>TIME</th>
+                    <th>SOURCE</th>
+                    <th>DEST</th>
+                    <th>PROTO</th>
+                    <th>LEN</th>
+                    <th>PAYLOAD / FLAGS</th>
+                  </tr>
+                </thead>
+                <tbody id="sniffer-tbody"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Processes Tab -->
+          <div id="tab-processes" class="tab-pane">
+            <div class="process-summary">
+              <span>ACTIVE DAEMONS: <strong id="daemon-count">0</strong></span>
+              <span>BOTNET NODES: <strong id="botnet-count">0</strong></span>
+              <span>TOTAL COMPUTING POWER: <strong id="compute-power">1.0 GHz</strong></span>
+            </div>
+            <div class="table-scroll">
+              <table id="process-table" class="data-table">
+                <thead>
+                  <tr>
+                    <th>PID</th>
+                    <th>TARGET</th>
+                    <th>TOOL / TASK</th>
+                    <th>PROGRESS</th>
+                    <th>ETA</th>
+                    <th>ACTION</th>
+                  </tr>
+                </thead>
+                <tbody id="process-tbody"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Arsenal Tab -->
+          <div id="tab-tools" class="tab-pane">
+            <div class="arsenal-intro">
+              <span>Purchased &amp; unsealed exploits, payload injectors, and security bypass tools.</span>
+            </div>
+            <div id="arsenal-grid" class="arsenal-container"></div>
+          </div>
+
+          <!-- Cyber-Deck Rig Tab -->
+          <div id="tab-rig" class="tab-pane">
+            <div class="arsenal-intro" style="display: flex; justify-content: space-between; align-items: center;">
+              <span>Modular Hardware Upgrades &amp; Thermal Overclock Core</span>
+              <button id="btn-toggle-overclock" class="btn-tool" style="color: var(--text-warning); border-color: var(--text-warning);">OVERCLOCK: OFF</button>
+            </div>
+            <div id="rig-grid" class="arsenal-container"></div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <!-- Interactive Modal Dialog (Text Editor / Hex Mini-game / Audio Prompt) -->
+  <div id="modal-overlay" class="modal-backdrop hidden">
+    <div id="modal-window" class="modal-box">
+      <div class="modal-header">
+        <span id="modal-title">MODAL</span>
+        <button id="btn-modal-close" class="btn-close">&times;</button>
+      </div>
+      <div id="modal-body" class="modal-content"></div>
+      <div id="modal-footer" class="modal-footer"></div>
+    </div>
+  </div>
+
+  <!-- Notification Toast Layer -->
+  <div id="toast-container" class="toast-stack"></div>
+
+  <!-- Game Modules -->
+  <script type="module" src="src/game.js"></script>
+</body>
+</html>
